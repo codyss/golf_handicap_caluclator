@@ -9,6 +9,12 @@ class Score(object):
     self.course = course_rating
     self.differential = (esc_score-course_rating)*115/slope_rating 
 
+class Course(object):
+  def __init__(self, slope_rating, course_rating):
+    self.slope_rating = slope_rating
+    self.course_rating = course_rating
+
+
 class Player(object):
   def __init__(self, name, scores=[], handicap=18):
     self.name = name
