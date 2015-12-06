@@ -29,10 +29,21 @@ class Player(object):
     self.handicap = calculate_handicap(self.scores)
 
   def show_handicap(self):
-    print self.handicap
+    print round(self.handicap,2)
 
   def delete(self, Score):
     self.scores.remove(Score)
+
+  # method that imports a dictionary into an object
+  def load_old_scores(self, old_scores):
+    for i in old_scores:
+      esc_score = old_scores[i]['esc_score']
+      date = old_scores[i]['date']
+      slope_rating = old_scores[i]['slope_rating']
+      course_rating = old_scores[i]['course_rating']
+      score_to_post = Score(esc_score, date, slope_rating, course_rating)
+      self.post(score_to_post)
+      
 
 def calculate_handicap(score_list):
   score_list.sort(key = lambda score: score.date, reverse=True)
@@ -45,4 +56,19 @@ def calculate_handicap(score_list):
     rounds += 1
     total_differential += i.differential
   return total_differential / rounds
+
+
+# have a function that creates a dictionary of the player's scores to store the info 
+
+def dict_player(Player):
+  storage = {}
+  storage['name'] = Player.name
+  count = 1
+  for i in Player.scores:
+    storage['score' + str(count)] = {'date':i.date, 'esc_score':i.esc_score, 'slope_rating':i.slope_rating, 'course_rating':i.course_rating}
+    count += 1
+  print storage
+  return storage 
+
+
 
