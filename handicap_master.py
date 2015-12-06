@@ -1,6 +1,7 @@
 #this app calculates a players handicap based on score entered
 
 import handicap
+import json
 
 def userprompt():
   name = raw_input("What's your name?")
@@ -9,7 +10,7 @@ def userprompt():
  
   while True:
     # prompt the user for what they would like to do
-    choice = raw_input("What do you want to do? A) post B) check handicap C) View scores D) Delete E) quit")
+    choice = raw_input("What do you want to do? A) post B) check handicap C) View scores D) Delete E) save f) load g)quit")
     # Posting
     if choice.lower() == 'a':
       score = int(raw_input("what'd you shoot?"))
@@ -29,7 +30,6 @@ def userprompt():
       if len(player.scores) > 0:
         for i in player.scores:
           print "score: %i, " %i.esc_score
-          print ""
       else:
         print "No scores, enter one!"
 
@@ -45,8 +45,22 @@ def userprompt():
         if i.date == date_of_score_to_delete:
           player.delete(i)
     
-    #quit
+    #save scores
     elif choice.lower() == 'e':
+      dict_to_save = handicap.dict_player(player)
+      f= open('handicap_data.json','w')
+      json.dump(dict_to_save, f)
+      f.close()
+
+    #load saved scores
+    elif choice.lower() == 'f':
+      f= open('handicap_data.json','r')
+      scores_to_load = json.load(f)
+      player.load_old_scores(scores_to_load)
+      f.close()
+
+    #quit
+    elif choice.lower() == 'g':
       break
     else:
       choice = raw_input("Please make a valid choice!")

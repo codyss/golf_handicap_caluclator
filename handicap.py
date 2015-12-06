@@ -62,10 +62,9 @@ def calculate_handicap(score_list):
 
 def dict_player(Player):
   storage = {}
-  storage['name'] = Player.name
   count = 1
   for i in Player.scores:
-    storage['score' + str(count)] = {'date':i.date, 'esc_score':i.esc_score, 'slope_rating':i.slope_rating, 'course_rating':i.course_rating}
+    storage['score' + str(count)] = {'date':i.date, 'esc_score':i.esc_score, 'slope_rating':i.slope, 'course_rating':i.course}
     count += 1
   print storage
   return storage 
