@@ -1,5 +1,7 @@
 #this app calculates a players handicap based on score entered
 
+import json
+import os
 
 class Score(object):
   def __init__(self, esc_score, date, slope_rating, course_rating):
@@ -18,7 +20,7 @@ class Course(object):
 class Player(object):
   def __init__(self, name, bday, scores=[], handicap=18):
     self.name = name
-    sel.bday = bday
+    self.bday = bday
     self.scores = scores
     self.handicap = handicap
 
@@ -76,19 +78,23 @@ def dict_player(Player):
 def userprompt():
   name = raw_input("What's your name?")
   bday = int(raw_input("What is your birthday? (MMDD)"))
-  player = Player(name)
+  player = Player(name, bday)
 
   #load saved scores
-  #give a player a ghin number to identify and save scores  - use bday
+  #give a player a ghin number (using bday) to identify and save scores  - use bday
   f= open('handicap_data.json','r')
-  all_scores = json.load(f)
+  if os.stat('handicap_data.json').st_size == 0:
+    all_scores = {}
+  else: 
+    all_scores = json.load(f)
   scores_to_load = {}
   for i, v in all_scores.iteritems():
     if v['bday'] == bday:
       scores_to_load = v['scores']
       player.load_old_scores(scores_to_load)
   f.close()
-  print "scores loaded"
+  if scores_to_load != {}:
+    print "scores loaded"
 
  
   while True:
@@ -131,11 +137,12 @@ def userprompt():
     
     #save scores into the file with all the scores
     elif choice.lower() == 'e':
-      if scores_to_load == {}:
-        dict_to_save = handicap.dict_player(player)
+      if all_scores == {}:
+        dict_to_save = dict_player(player)
       else:
-        dict_to_save = scores_to_load
-        dict_to_save.update(handicap.dict_player(player))
+        dict_to_save = all_scores
+        player_new_scores = dict_player(player)
+        dict_to_save[player.name] = player_new_scores[player.name]
       f= open('handicap_data.json','w')
       json.dump(dict_to_save, f)
       f.close()

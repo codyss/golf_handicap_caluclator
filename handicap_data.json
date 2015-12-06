@@ -1,11 +1,1 @@
-{"name": "Ilana", 
-"scores": {"score1": 
-                {"date": 10122015, "course_rating": 72.0, "slope_rating": 130, "esc_score": 75}}}
-
-
-{"player1": {
-  "name": "Ilana",
-  "bday": "0105",
-  "scores":{"score1": 
-  {"date": 10122015, "course_rating": 72.0, "slope_rating": 130, "esc_score": 75}}    
-  }}                
+{"ilana": {"bday": 105, "name": "ilana", "scores": {"score1": {"date": 9152015, "course_rating": 70.0, "slope_rating": 115, "esc_score": 75}}}, "cody": {"bday": 327, "name": "cody", "scores": {"score1": {"date": 9152015, "course_rating": 69.0, "slope_rating": 115, "esc_score": 70}}}}

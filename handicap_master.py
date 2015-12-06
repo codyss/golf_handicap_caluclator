@@ -1,7 +1,7 @@
 #this app calculates a players handicap based on score entered
 
 import handicap
-import json
+
 
 
 handicap.userprompt()
