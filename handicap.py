@@ -16,8 +16,9 @@ class Course(object):
 
 
 class Player(object):
-  def __init__(self, name, scores=[], handicap=18):
+  def __init__(self, name, bday, scores=[], handicap=18):
     self.name = name
+    sel.bday = bday
     self.scores = scores
     self.handicap = handicap
 
@@ -35,6 +36,7 @@ class Player(object):
     self.scores.remove(Score)
 
   # method that imports a dictionary into an object
+  # needs to be updated to include new dictionary data 
   def load_old_scores(self, old_scores):
     for i in old_scores:
       esc_score = old_scores[i]['esc_score']
@@ -57,17 +59,90 @@ def calculate_handicap(score_list):
     total_differential += i.differential
   return total_differential / rounds
 
-
-# have a function that creates a dictionary of the player's scores to store the info 
-
 def dict_player(Player):
+  """function creates a dictionary of the player's scores to store in a file"""
   storage = {}
+  player_data = {}
+  player_data[Player.name] = storage
+  storage['name'] = Player.name
+  storage['bday'] = Player.bday
+  storage['scores'] = {}
   count = 1
   for i in Player.scores:
-    storage['score' + str(count)] = {'date':i.date, 'esc_score':i.esc_score, 'slope_rating':i.slope, 'course_rating':i.course}
+    storage['scores']['score' + str(count)] = {'date':i.date, 'esc_score':i.esc_score, 'slope_rating':i.slope, 'course_rating':i.course}
     count += 1
-  print storage
-  return storage 
+  return player_data 
+
+def userprompt():
+  name = raw_input("What's your name?")
+  bday = int(raw_input("What is your birthday? (MMDD)"))
+  player = Player(name)
+
+  #load saved scores
+  #give a player a ghin number to identify and save scores  - use bday
+  f= open('handicap_data.json','r')
+  all_scores = json.load(f)
+  scores_to_load = {}
+  for i, v in all_scores.iteritems():
+    if v['bday'] == bday:
+      scores_to_load = v['scores']
+      player.load_old_scores(scores_to_load)
+  f.close()
+  print "scores loaded"
+
+ 
+  while True:
+    # prompt the user for what they would like to do
+    choice = raw_input("What do you want to do? A) post B) check handicap C) View scores D) Delete E) save g)quit")
+    # Posting
+    if choice.lower() == 'a':
+      score = int(raw_input("what'd you shoot?"))
+      date = int(raw_input("When did you play. In MDDYYYY format"))
+      slope_rating = int(raw_input("What was the slope?"))
+      course_rating = float(raw_input("What was the course rating?"))
+      inputted_score = Score(score, date, slope_rating, course_rating)
+      player.post(inputted_score)  
+    
+    #check handicap
+    elif choice.lower() == 'b':
+      player.show_handicap()   
+    
+
+    #see scores
+    elif choice.lower() == 'c':
+      if len(player.scores) > 0:
+        print "score: "
+        for i in player.scores:
+          print "%i, " %i.esc_score
+      else:
+        print "No scores, enter one!"
 
 
+    #delete a score
+    elif choice.lower() == 'd':
+      print "Which score would you like to delete?"
+      for i in player.scores:
+        print "%i on %s" % (i.esc_score, i.date)
+      print "Enter the date shown"
+      date_of_score_to_delete = int(raw_input().strip())
+      for i in player.scores:
+        if i.date == date_of_score_to_delete:
+          player.delete(i)
+    
+    #save scores into the file with all the scores
+    elif choice.lower() == 'e':
+      if scores_to_load == {}:
+        dict_to_save = handicap.dict_player(player)
+      else:
+        dict_to_save = scores_to_load
+        dict_to_save.update(handicap.dict_player(player))
+      f= open('handicap_data.json','w')
+      json.dump(dict_to_save, f)
+      f.close()
+
+    #quit
+    elif choice.lower() == 'g':
+      break
+    else:
+      choice = raw_input("Please make a valid choice!")
 
