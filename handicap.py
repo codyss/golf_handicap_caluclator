@@ -2,6 +2,7 @@
 
 import json
 import os
+from pymongo import MongoClient
 
 class Score(object):
   def __init__(self, esc_score, date, slope_rating, course_rating):
@@ -79,9 +80,11 @@ def userprompt():
   name = raw_input("What's your name?")
   bday = int(raw_input("What is your birthday? (MMDD)"))
   player = Player(name, bday)
-
+  client = MongoClient()
+  db = client.test
   #load saved scores
   #give a player a ghin number (using bday) to identify and save scores  - use bday
+  #load needs to incorporate mongo db instead of file
   f= open('handicap_data.json','r')
   if os.stat('handicap_data.json').st_size == 0:
     all_scores = {}
@@ -119,7 +122,7 @@ def userprompt():
       if len(player.scores) > 0:
         print "score: "
         for i in player.scores:
-          print "%i, " %i.esc_score
+          print "%i on %i" %(i.esc_score, i.date)
       else:
         print "No scores, enter one!"
 
@@ -136,16 +139,18 @@ def userprompt():
           player.delete(i)
     
     #save scores into the file with all the scores
+    #there really should be no save - posting should save the score 
+    #mongo db started... data is added, but now there are multiple records
     elif choice.lower() == 'e':
       if all_scores == {}:
-        dict_to_save = dict_player(player)
+        all_scores = dict_player(player)
       else:
-        dict_to_save = all_scores
         player_new_scores = dict_player(player)
-        dict_to_save[player.name] = player_new_scores[player.name]
+        all_scores[player.name] = player_new_scores[player.name]
       f= open('handicap_data.json','w')
-      json.dump(dict_to_save, f)
+      json.dump(all_scores, f)
       f.close()
+      result = db.handicap_data.insert_one(all_scores)
 
     #quit
     elif choice.lower() == 'g':
